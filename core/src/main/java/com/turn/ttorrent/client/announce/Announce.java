@@ -104,7 +104,7 @@ public class Announce implements Runnable {
 			}
 
 			// Shuffle the list of tracker clients once on creation.
-			Collections.shuffle(tierClients);
+			//Collections.shuffle(tierClients);
 
 			// Tier is guaranteed to be non-empty by
 			// Torrent#parseAnnounceInformation(), so we can add it safely.
