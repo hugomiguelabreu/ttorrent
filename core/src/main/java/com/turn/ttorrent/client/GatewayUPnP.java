@@ -14,6 +14,22 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Map;
 
+/**
+ * A Universal Plug-n-Play class to forwarding ports.
+ *
+ * <p>
+ * This class is supposed to be instantiated only once, and it should be shared
+ * through all classes. This is only because of the initial latency getting
+ * information about the gateway. If you don't mind the initial client latency
+ * then you can instantiate as many classes as you wish.
+ * {@link #startGatewayDiscover} to simply discover your gateway, if there is one
+ * and {@link #mapPort} to map a port from your software to your router.
+ * If the port is available it will be redirected to you.
+ * </p>
+ *
+ * @author markerstone
+ */
+
 public class GatewayUPnP {
 
     private boolean LIST_ALL_MAPPINGS;

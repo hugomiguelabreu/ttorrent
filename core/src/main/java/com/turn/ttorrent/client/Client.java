@@ -146,11 +146,18 @@ public class Client extends Observable implements Runnable,
 		this.service = new ConnectionHandler(this.torrent, id, address, Client.gateway);
 		this.service.register(this);
 
+		//Remove port from router when stopping.
+		/*if (gateway.removePort(port)) {
+			System.out.println("Port mapping removed, test SUCCESSFUL");
+		} else {
+			System.out.println("Port mapping removal FAILED");
+		}*/
+
 		this.self = new Peer(
-			this.service.getSocketAddress()
-				.getAddress().getHostAddress(),
-			this.service.getSocketAddress().getPort(),
-			ByteBuffer.wrap(id.getBytes(Torrent.BYTE_ENCODING)));
+				(Client.gateway != null && Client.gateway.isActive()) ?
+						(Client.gateway.getPublicAddress()) : (this.service.getSocketAddress().getAddress().getHostAddress()),
+				this.service.getSocketAddress().getPort(),
+				ByteBuffer.wrap(id.getBytes(Torrent.BYTE_ENCODING)));
 
 		// Initialize the announce request thread, and register ourselves to it
 		// as well.

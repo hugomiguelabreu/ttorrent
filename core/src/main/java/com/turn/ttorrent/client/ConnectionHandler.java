@@ -185,7 +185,7 @@ public class ConnectionHandler implements Runnable {
 	 * the defined range is available or usable.
 	 */
 	ConnectionHandler(SharedTorrent torrent, String id, InetAddress address, GatewayUPnP gateway)
-			throws IOException {
+			throws IOException, SAXException {
 		this.torrent = torrent;
 		this.id = id;
 
@@ -195,7 +195,7 @@ public class ConnectionHandler implements Runnable {
 			 port <= ConnectionHandler.PORT_RANGE_END;
 			 port++) {
 			InetSocketAddress tryAddress =
-					new InetSocketAddress(gateway == null ? address.getHostAddress() :gateway.getPublicAddress(), port);
+					new InetSocketAddress(gateway == null ? address.getHostAddress() :gateway.getPrivateAddress(), port);
 
 			try {
 				if(gateway != null) {
