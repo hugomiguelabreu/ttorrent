@@ -40,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 
 /**
@@ -96,57 +97,6 @@ public class ConnectionHandler implements Runnable {
 	private ExecutorService executor;
 	private Thread thread;
 	private boolean stop;
-
-	/**
-	 * Create and start a new listening service for out torrent, reporting
-	 * with our peer ID on the given address.
-	 *
-	 * <p>
-	 * This binds to the first available port in the client port range
-	 * PORT_RANGE_START to PORT_RANGE_END.
-	 * </p>
-	 *
-	 * @param torrent The torrent shared by this client.
-	 * @param id This client's peer ID.
-	 * @param address The address to bind to.
-	 * @throws IOException When the service can't be started because no port in
-	 * the defined range is available or usable.
-	 */
-	ConnectionHandler(SharedTorrent torrent, String id, InetAddress address)
-		throws IOException {
-		this.torrent = torrent;
-		this.id = id;
-
-		// Bind to the first available port in the range
-		// [PORT_RANGE_START; PORT_RANGE_END].
-		for (int port = ConnectionHandler.PORT_RANGE_START;
-				port <= ConnectionHandler.PORT_RANGE_END;
-				port++) {
-			InetSocketAddress tryAddress =
-				new InetSocketAddress(address, port);
-
-			try {
-				this.channel = ServerSocketChannel.open();
-				this.channel.socket().bind(tryAddress);
-				this.channel.configureBlocking(false);
-				this.address = tryAddress;
-				break;
-			} catch (IOException ioe) {
-				// Ignore, try next port
-				logger.warn("Could not bind to {}, trying next port...", tryAddress);
-			}
-		}
-
-		if (this.channel == null || !this.channel.socket().isBound()) {
-			throw new IOException("No available port for the BitTorrent client!");
-		}
-
-		logger.info("Listening for incoming connections on {}.", this.address);
-
-		this.listeners = new HashSet<IncomingConnectionListener>();
-		this.executor = null;
-		this.thread = null;
-	}
 
 	/**
 	 * Return the full socket address this service is bound to.
@@ -215,6 +165,70 @@ public class ConnectionHandler implements Runnable {
 			this.executor.shutdownNow();
 		}
 
+		this.executor = null;
+		this.thread = null;
+	}
+
+	/**
+	 * Create and start a new listening service for out torrent, reporting
+	 * with our peer ID on the given address.
+	 *
+	 * <p>
+	 * This binds to the first available port in the client port range
+	 * PORT_RANGE_START to PORT_RANGE_END.
+	 * </p>
+	 *
+	 * @param torrent The torrent shared by this client.
+	 * @param id This client's peer ID.
+	 * @param address The address to bind to.
+	 * @throws IOException When the service can't be started because no port in
+	 * the defined range is available or usable.
+	 */
+	ConnectionHandler(SharedTorrent torrent, String id, InetAddress address, GatewayUPnP gateway)
+			throws IOException {
+		this.torrent = torrent;
+		this.id = id;
+
+		// Bind to the first available port in the range
+		// [PORT_RANGE_START; PORT_RANGE_END].
+		for (int port = ConnectionHandler.PORT_RANGE_START;
+			 port <= ConnectionHandler.PORT_RANGE_END;
+			 port++) {
+			InetSocketAddress tryAddress =
+					new InetSocketAddress(gateway == null ? address.getHostAddress() :gateway.getPublicAddress(), port);
+
+			try {
+				if(gateway != null) {
+					if (gateway.mapPort(port)) {
+						this.channel = ServerSocketChannel.open();
+						this.channel.socket().bind(tryAddress);
+						this.channel.configureBlocking(false);
+						this.address = tryAddress;
+						break;
+					} else {
+						// Ignore, try next port
+						logger.warn("Could not map to {}, trying next port...", tryAddress);
+					}
+				}else{
+					this.channel = ServerSocketChannel.open();
+					this.channel.socket().bind(tryAddress);
+					this.channel.configureBlocking(false);
+					this.address = tryAddress;
+					break;
+				}
+			} catch (IOException | SAXException ioe) {
+				// Ignore, try next port
+				logger.warn("Could not bind to {}, trying next port...", tryAddress);
+			}
+		}
+
+		if (this.channel == null || !this.channel.socket().isBound()) {
+			throw new IOException("No available port for the BitTorrent client!");
+		}
+
+		logger.info("Listening for incoming connections on {}.", this.address);
+
+		this.listeners = new HashSet<IncomingConnectionListener>();
 		this.executor = null;
 		this.thread = null;
 	}

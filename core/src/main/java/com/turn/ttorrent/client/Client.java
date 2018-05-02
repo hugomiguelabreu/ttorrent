@@ -46,6 +46,9 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * A pure-java BitTorrent client.
@@ -93,8 +96,8 @@ public class Client extends Observable implements Runnable,
 		SHARING,
 		SEEDING,
 		ERROR,
-		DONE;
-	};
+		DONE
+	}
 
 	private static final String BITTORRENT_ID_PREFIX = "-TO0042-";
 
@@ -113,6 +116,8 @@ public class Client extends Observable implements Runnable,
 
 	private Random random;
 
+	private static GatewayUPnP gateway = null;
+
 	/**
 	 * Initialize the BitTorrent client.
 	 *
@@ -120,16 +125,25 @@ public class Client extends Observable implements Runnable,
 	 * @param torrent The torrent to download and share.
 	 */
 	public Client(InetAddress address, SharedTorrent torrent)
-		throws UnknownHostException, IOException {
+			throws IOException, InterruptedException, ParserConfigurationException, SAXException {
 		this.torrent = torrent;
 		this.state = ClientState.WAITING;
 
 		String id = Client.BITTORRENT_ID_PREFIX + UUID.randomUUID()
 			.toString().split("-")[4];
 
+		//We're trying to bind to an external address
+		//there's a need to start the gateway discovery to map ports
+		if(!address.isSiteLocalAddress()){
+			if(!(Client.gateway != null && Client.gateway.isActive())) {
+				Client.gateway = new GatewayUPnP();
+				if (!Client.gateway.startGatewayDiscover())
+					Client.gateway = null;
+			}
+		}
 		// Initialize the incoming connection handler and register ourselves to
 		// it.
-		this.service = new ConnectionHandler(this.torrent, id, address);
+		this.service = new ConnectionHandler(this.torrent, id, address, Client.gateway);
 		this.service.register(this);
 
 		this.self = new Peer(
@@ -734,7 +748,7 @@ public class Client extends Observable implements Runnable,
 			channel.socket().getPort(),
 			(peerId != null
 				? ByteBuffer.wrap(peerId)
-				: (ByteBuffer)null));
+				: null));
 
 		logger.info("Handling new peer connection with {}...", search);
 		SharingPeer peer = this.getOrCreatePeer(search);
@@ -988,5 +1002,5 @@ public class Client extends Observable implements Runnable,
 				this.timer.cancel();
 			}
 		}
-	};
+	}
 }
