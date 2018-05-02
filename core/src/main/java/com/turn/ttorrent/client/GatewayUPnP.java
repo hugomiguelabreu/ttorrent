@@ -9,30 +9,34 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.Map;
 
-public final class GatewayUPnP {
+public class GatewayUPnP {
 
-    private static boolean LIST_ALL_MAPPINGS = true;
-    private static GatewayDiscover gatewayDiscover = null;
-    private static Map<InetAddress, GatewayDevice> gateways = null;
-    private static InetAddress localAddress;
-    private static String externalIPAddress;
-    private static GatewayDevice activeGW = null;
-    private static PortMappingEntry portMapping;
+    private boolean LIST_ALL_MAPPINGS;
+    private GatewayDiscover gatewayDiscover;
+    private Map<InetAddress, GatewayDevice> gateways;
+    private InetAddress localAddress;
+    private String externalIPAddress;
+    private GatewayDevice activeGW;
+    private PortMappingEntry portMapping;
     private static final Logger logger =
             LoggerFactory.getLogger(GatewayUPnP.class);
 
-    private GatewayUPnP() throws InterruptedException
+    public GatewayUPnP() throws InterruptedException
     {
+        LIST_ALL_MAPPINGS = true;
+        gatewayDiscover = null;
+        gateways = null;
+        activeGW = null;
+        portMapping = null;
     }
 
-    public static boolean startGatewayDiscover() throws ParserConfigurationException, SAXException, IOException, InterruptedException
+    public boolean startGatewayDiscover() throws ParserConfigurationException, SAXException, IOException, InterruptedException
     {
-        if(activeGW != null && activeGW.isConnected())
-            return true;
-
         gatewayDiscover = new GatewayDiscover();
         gateways = gatewayDiscover.discover();
 
@@ -97,7 +101,7 @@ public final class GatewayUPnP {
         return true;
     }
 
-    public static boolean mapPort(int port) throws IOException, SAXException
+    public boolean mapPort(int port) throws IOException, SAXException
     {
         logger.info("Querying device to see if a port mapping already exists for port "+ port);
 
@@ -116,7 +120,7 @@ public final class GatewayUPnP {
         return true;
     }
 
-    public static boolean removePort(int port) throws IOException, SAXException
+    public boolean removePort(int port) throws IOException, SAXException
     {
         if (activeGW.deletePortMapping(port,"TCP")) {
             logger.info("Port mapping removed");
@@ -126,4 +130,20 @@ public final class GatewayUPnP {
             return false;
         }
     }
+
+    public boolean isActive() throws IOException, SAXException
+    {
+        return activeGW != null && activeGW.isConnected();
+    }
+
+    public String getPublicAddress()
+    {
+        return this.externalIPAddress;
+    }
+
+    public String getPrivateAddress()
+    {
+        return this.localAddress.getHostAddress();
+    }
+
 }
