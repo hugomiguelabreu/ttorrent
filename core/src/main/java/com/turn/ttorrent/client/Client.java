@@ -284,6 +284,17 @@ public class Client extends Observable implements Runnable,
 		this.seed = seed;
 		this.stop = false;
 
+		//Remove port from router when stopping.
+		try {
+			if (gateway.removePort(this.service.getSocketAddress().getPort())) {
+                logger.info("Port mapping removed, test SUCCESSFUL");
+            } else {
+                logger.error("Port mapping removal FAILED");
+            }
+		} catch (IOException | SAXException e) {
+			e.printStackTrace();
+		}
+
 		if (this.thread == null || !this.thread.isAlive()) {
 			this.thread = new Thread(this);
 			this.thread.setName("bt-client(" +
