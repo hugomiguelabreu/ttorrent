@@ -20,10 +20,7 @@ import com.turn.ttorrent.client.peer.SharingPeer;
 import com.turn.ttorrent.common.Utils;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -195,7 +192,8 @@ public class ConnectionHandler implements Runnable {
 			 port <= ConnectionHandler.PORT_RANGE_END;
 			 port++) {
 			InetSocketAddress tryAddress =
-					new InetSocketAddress(gateway == null ? address.getHostAddress() :gateway.getPrivateAddress(), port);
+					new InetSocketAddress(gateway == null && address.isSiteLocalAddress()
+							? address.getHostAddress() : ((gateway == null && !address.isSiteLocalAddress()) ? "0.0.0.0" : gateway.getPrivateAddress()), port);
 
 			try {
 				if(gateway != null) {
