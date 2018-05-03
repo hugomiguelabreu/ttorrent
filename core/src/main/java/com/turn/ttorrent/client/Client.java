@@ -172,7 +172,8 @@ public class Client extends Observable implements Runnable,
 
 		this.self = new Peer(
 				(Client.gateway != null && Client.gateway.isActive()) ?
-						(Client.gateway.getPublicAddress()) : (this.service.getSocketAddress().getAddress().getHostAddress()),
+						(Client.gateway.getPublicAddress()) :
+						(address.isSiteLocalAddress() ? this.service.getSocketAddress().getAddress().getHostAddress() : "0.0.0.0"),
 				this.service.getSocketAddress().getPort(),
 				ByteBuffer.wrap(id.getBytes(Torrent.BYTE_ENCODING)));
 
