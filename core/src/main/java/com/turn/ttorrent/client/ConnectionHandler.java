@@ -25,9 +25,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -94,6 +92,41 @@ public class ConnectionHandler implements Runnable {
 	private ExecutorService executor;
 	private Thread thread;
 	private boolean stop;
+
+	public static ArrayList<String> findLocalAddresses() {
+		ArrayList<String> ret = new ArrayList<>();
+		try {
+			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+			while (interfaces.hasMoreElements()) {
+				NetworkInterface iface = interfaces.nextElement();
+				// filters out 127.0.0.1 and inactive interfaces
+				if (iface.isLoopback() || !iface.isUp())
+					continue;
+
+				Enumeration<InetAddress> addresses = iface.getInetAddresses();
+				String ipv6 = null;
+				String ipv4 = null;
+
+				while(addresses.hasMoreElements()) {
+					InetAddress addr = addresses.nextElement();
+					if(Inet6Address.class == addr.getClass() && addr.isLinkLocalAddress()){
+						ipv6 = addr.getHostAddress().replaceAll("%.*", ""); // e preciso tirar o %interface
+						System.out.println("local ipv6 address: " + ipv6);
+					}
+					if(Inet4Address.class == addr.getClass()){
+						ipv4 = addr.getHostName();
+						System.out.println("local ipv4 address: " + ipv4);
+					}
+				}
+
+				ret.add(ipv4);
+			}
+		} catch (SocketException e) {
+			throw new RuntimeException(e);
+		}
+
+		return ret;
+	}
 
 	/**
 	 * Return the full socket address this service is bound to.
@@ -193,7 +226,7 @@ public class ConnectionHandler implements Runnable {
 			 port++) {
 			InetSocketAddress tryAddress =
 					new InetSocketAddress(gateway == null && address.isSiteLocalAddress()
-							? address.getHostAddress() : ((gateway == null && !address.isSiteLocalAddress()) ? "0.0.0.0" : gateway.getPrivateAddress()), port);
+							? address.getHostAddress() : ((gateway == null && !address.isSiteLocalAddress()) ? findLocalAddresses().get(0) : gateway.getPrivateAddress()), port);
 
 			try {
 				if(gateway != null) {
