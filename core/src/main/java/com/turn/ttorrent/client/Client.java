@@ -304,10 +304,10 @@ public class Client extends Observable implements Runnable,
 
 		//Remove port from router when stopping.
 		try {
-			if (Client.gateway.removePort(this.service.getSocketAddress().getPort())) {
+			if (Client.gateway != null && Client.gateway.removePort(this.service.getSocketAddress().getPort())) {
 				logger.info("Port mapping removed, test SUCCESSFUL");
 			} else {
-				logger.error("Port mapping removal FAILED");
+				logger.error("Port mapping removal FAILED or No gateway");
 			}
 		} catch (IOException | SAXException e) {
 			e.printStackTrace();

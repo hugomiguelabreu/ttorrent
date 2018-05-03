@@ -216,26 +216,21 @@ public class TrackedTorrent extends Torrent {
 			peer = new TrackedPeer(this, ip, port, peerId);
 			state = TrackedPeer.PeerState.STARTED;
 			this.addPeer(peer);
-			this.setChanged();
-			this.notifyObservers(peer);
 		} else if (RequestEvent.STOPPED.equals(event)) {
 			peer = this.removePeer(hexPeerId);
 			state = TrackedPeer.PeerState.STOPPED;
-			this.setChanged();
-			this.notifyObservers(peer);
 		} else if (RequestEvent.COMPLETED.equals(event)) {
 			peer = this.getPeer(hexPeerId);
 			state = TrackedPeer.PeerState.COMPLETED;
-			this.setChanged();
-			this.notifyObservers(peer);
 		} else if (RequestEvent.NONE.equals(event)) {
 			peer = this.getPeer(hexPeerId);
 			state = TrackedPeer.PeerState.STARTED;
-			this.setChanged();
-			this.notifyObservers(peer);
 		} else {
 			throw new IllegalArgumentException("Unexpected announce event type!");
 		}
+
+		this.setChanged();
+		this.notifyObservers(peer);
 
 		peer.update(state, uploaded, downloaded, left);
 		return peer;
