@@ -127,7 +127,7 @@ public class Client extends Observable implements Runnable,
 
 	public Client(InetAddress address, SharedTorrent torrent)
 			throws IOException, InterruptedException, ParserConfigurationException, SAXException {
-		new Client(address, torrent, "");
+		this(address, torrent, "");
 	}
 
 	/**
