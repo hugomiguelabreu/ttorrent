@@ -124,13 +124,30 @@ public class Client extends Observable implements Runnable,
 	 * @param address The address to bind to.
 	 * @param torrent The torrent to download and share.
 	 */
+
 	public Client(InetAddress address, SharedTorrent torrent)
+			throws IOException, InterruptedException, ParserConfigurationException, SAXException {
+		new Client(address, torrent, "");
+	}
+
+	/**
+	 * Initialize the BitTorrent client.
+	 *
+	 * @param address The address to bind to.
+	 * @param torrent The torrent to download and share.
+	 * @param peerId The custom peerID for handshake.
+	 */
+	public Client(InetAddress address, SharedTorrent torrent, String peerId)
 			throws IOException, InterruptedException, ParserConfigurationException, SAXException {
 		this.torrent = torrent;
 		this.state = ClientState.WAITING;
-
-		String id = Client.BITTORRENT_ID_PREFIX + UUID.randomUUID()
-			.toString().split("-")[4];
+		String id;
+		if(!peerId.equals("")){
+			id = peerId;
+		}else {
+			id = Client.BITTORRENT_ID_PREFIX + UUID.randomUUID()
+					.toString().split("-")[4];
+		}
 
 		//We're trying to bind to an external address
 		//there's a need to start the gateway discovery to map ports
