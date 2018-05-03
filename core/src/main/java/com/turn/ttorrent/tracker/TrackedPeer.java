@@ -209,4 +209,12 @@ public class TrackedPeer extends Peer {
 		peer.put("port", new BEValue(this.getPort()));
 		return new BEValue(peer);
 	}
+
+	/**
+	 * Returns peer state
+	 * just like in the {@link PeerState}
+	 */
+	public PeerState getState(){
+		return this.state;
+	}
 }
