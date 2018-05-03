@@ -163,13 +163,6 @@ public class Client extends Observable implements Runnable,
 		this.service = new ConnectionHandler(this.torrent, id, address, Client.gateway);
 		this.service.register(this);
 
-		//Remove port from router when stopping.
-		/*if (gateway.removePort(port)) {
-			System.out.println("Port mapping removed, test SUCCESSFUL");
-		} else {
-			System.out.println("Port mapping removal FAILED");
-		}*/
-
 		this.self = new Peer(
 				(Client.gateway != null && Client.gateway.isActive()) ?
 						(Client.gateway.getPublicAddress()) : (this.service.getSocketAddress().getAddress().getHostAddress()),
@@ -284,17 +277,6 @@ public class Client extends Observable implements Runnable,
 		this.seed = seed;
 		this.stop = false;
 
-		//Remove port from router when stopping.
-		try {
-			if (gateway.removePort(this.service.getSocketAddress().getPort())) {
-                logger.info("Port mapping removed, test SUCCESSFUL");
-            } else {
-                logger.error("Port mapping removal FAILED");
-            }
-		} catch (IOException | SAXException e) {
-			e.printStackTrace();
-		}
-
 		if (this.thread == null || !this.thread.isAlive()) {
 			this.thread = new Thread(this);
 			this.thread.setName("bt-client(" +
@@ -319,6 +301,17 @@ public class Client extends Observable implements Runnable,
 	 */
 	public void stop(boolean wait) {
 		this.stop = true;
+
+		//Remove port from router when stopping.
+		try {
+			if (Client.gateway.removePort(this.service.getSocketAddress().getPort())) {
+				logger.info("Port mapping removed, test SUCCESSFUL");
+			} else {
+				logger.error("Port mapping removal FAILED");
+			}
+		} catch (IOException | SAXException e) {
+			e.printStackTrace();
+		}
 
 		if (this.thread != null && this.thread.isAlive()) {
 			this.thread.interrupt();
