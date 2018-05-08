@@ -143,7 +143,7 @@ public class Client extends Observable implements Runnable,
 		this.state = ClientState.WAITING;
 		String id;
 		if(!peerId.equals("")){
-			id = peerId;
+			id = Client.BITTORRENT_ID_PREFIX + peerId;
 		}else {
 			id = Client.BITTORRENT_ID_PREFIX + UUID.randomUUID()
 					.toString().split("-")[4];
