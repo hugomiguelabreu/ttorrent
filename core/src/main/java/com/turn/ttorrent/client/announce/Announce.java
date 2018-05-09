@@ -225,7 +225,7 @@ public class Announce implements Runnable {
 			} catch (AnnounceException ae) {
 				logger.warn(ae.getMessage());
 
-				if(ae.getMessage().equals(ErrorMessage.FailureReason.UNKNOWN_TORRENT)){
+				if(ae.getMessage().equals(ErrorMessage.FailureReason.UNKNOWN_TORRENT.getMessage())){
 					logger.warn("Waiting for torrent to start on this tracker - CUSTOM MADE FOR LEI");
 				}else {
 					try {
