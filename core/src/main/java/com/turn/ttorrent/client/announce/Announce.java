@@ -225,10 +225,14 @@ public class Announce implements Runnable {
 			} catch (AnnounceException ae) {
 				logger.warn(ae.getMessage());
 
-				try {
-					this.moveToNextTrackerClient();
-				} catch (AnnounceException e) {
-					logger.error("Unable to move to the next tracker client: {}", e.getMessage());
+				if(ae.getMessage().equals(ErrorMessage.FailureReason.UNKNOWN_TORRENT)){
+					logger.warn("Waiting for torrent to start on this tracker - CUSTOM MADE FOR LEI");
+				}else {
+					try {
+						this.moveToNextTrackerClient();
+					} catch (AnnounceException e) {
+						logger.error("Unable to move to the next tracker client: {}", e.getMessage());
+					}
 				}
 			}
 
