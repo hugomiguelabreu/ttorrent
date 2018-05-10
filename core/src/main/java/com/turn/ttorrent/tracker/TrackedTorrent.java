@@ -71,6 +71,9 @@ public class TrackedTorrent extends Torrent {
 	/** Peers currently exchanging on this torrent. */
 	private ConcurrentMap<String, TrackedPeer> peers;
 
+	/** Special super peers currently exchanging on this torrent. */
+	private ConcurrentMap<String, TrackedPeer> injectedPeers;
+
 	/**
 	 * Create a new tracked torrent from meta-info binary data.
 	 *
@@ -82,6 +85,7 @@ public class TrackedTorrent extends Torrent {
 		super(torrent, false);
 
 		this.peers = new ConcurrentHashMap<String, TrackedPeer>();
+		this.injectedPeers = new ConcurrentHashMap<String, TrackedPeer>();
 		this.answerPeers = TrackedTorrent.DEFAULT_ANSWER_NUM_PEERS;
 		this.announceInterval = TrackedTorrent.DEFAULT_ANNOUNCE_INTERVAL_SECONDS;
 	}
@@ -95,6 +99,33 @@ public class TrackedTorrent extends Torrent {
 	 */
 	public Map<String, TrackedPeer> getPeers() {
 		return this.peers;
+	}
+
+	/**
+	 * Add an special super peer exchanging on this torrent.
+	 *
+	 * @param peer The new Peer involved with this torrent.
+	 */
+	public void injectPeer(TrackedPeer peer) {
+		this.injectedPeers.put(peer.getHexPeerId(), peer);
+	}
+
+	/**
+	 * Retrieve a special injected peer exchanging on this torrent.
+	 *
+	 * @param peerId The hexadecimal representation of the peer's ID.
+	 */
+	public TrackedPeer getInjectedPeer(String peerId) {
+		return this.injectedPeers.get(peerId);
+	}
+
+	/**
+	 * Remove a peer from this torrent's swarm.
+	 *
+	 * @param peerId The hexadecimal representation of the peer's ID.
+	 */
+	public TrackedPeer removeInjectedPeer(String peerId) {
+		return this.injectedPeers.remove(peerId);
 	}
 
 	/**
@@ -281,6 +312,16 @@ public class TrackedTorrent extends Torrent {
 			}
 
 			peers.add(candidate);
+		}
+
+		if (this.injectedPeers.containsKey(peer.getHexPeerId())) {
+			//O peer que quer a lista é um Tracker injectado artificialmente
+			//TODO: Check freshness of peer | How to do it?
+			for (TrackedPeer inj : this.injectedPeers.values()) {
+				if(!inj.getHexPeerId().equals(peer.getHexPeerId())) {
+					peers.add(0, inj);
+				}
+			}
 		}
 
 		return peers;
