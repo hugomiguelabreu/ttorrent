@@ -107,10 +107,10 @@ public class TrackedTorrent extends Torrent {
 	/**
 	 * Set the super injected peer that is local to the server
 	 *
-	 * @param peer The new Peer involved with this torrent.
+	 * @param peerID The new Peer involved with this torrent.
 	 */
-	public void setlocalinjectPeer(TrackedPeer peer) {
-		this.localInjectedPeer = peer.getHexPeerId();
+	public void setlocalInjectPeerID(String peerID) {
+		this.localInjectedPeer = peerID;
 	}
 
 	/**
