@@ -74,6 +74,9 @@ public class TrackedTorrent extends Torrent {
 	/** Special super peers currently exchanging on this torrent. */
 	private ConcurrentMap<String, TrackedPeer> injectedPeers;
 
+	/** Special super peers currently exchanging on this torrent. */
+	private String localInjectedPeer;
+
 	/**
 	 * Create a new tracked torrent from meta-info binary data.
 	 *
@@ -99,6 +102,15 @@ public class TrackedTorrent extends Torrent {
 	 */
 	public Map<String, TrackedPeer> getPeers() {
 		return this.peers;
+	}
+
+	/**
+	 * Set the super injected peer that is local to the server
+	 *
+	 * @param peer The new Peer involved with this torrent.
+	 */
+	public void setlocalinjectPeer(TrackedPeer peer) {
+		this.localInjectedPeer = peer.getHexPeerId();
 	}
 
 	/**
@@ -315,6 +327,10 @@ public class TrackedTorrent extends Torrent {
 		}
 
 		if (this.injectedPeers.containsKey(peer.getHexPeerId())) {
+			//Se o peer é um tracker que não o próprio limpamos os outros users;
+			if(!this.localInjectedPeer.equals(peer.getHexPeerId())){
+				peers.clear();
+			}
 			//O peer que quer a lista é um Tracker injectado artificialmente
 			//TODO: Check freshness of peer | How to do it?
 			for (TrackedPeer inj : this.injectedPeers.values()) {
