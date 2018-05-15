@@ -91,7 +91,7 @@ public class Torrent extends Observable{
 	}
 
 
-	protected final byte[] encoded;
+	protected byte[] encoded;
 	protected final byte[] encoded_info;
 	protected final Map<String, BEValue> decoded;
 	protected final Map<String, BEValue> decoded_info;
@@ -280,6 +280,24 @@ public class Torrent extends Observable{
 			this.decoded_info.get("piece length").getInt());
 		logger.info("  Total size..: {} byte(s)",
 			String.format("%,d", this.size));
+	}
+
+	public void newAnnounceEncode() throws IOException, InterruptedException, NoSuchAlgorithmException {
+		if (this.trackers != null) {
+			List<BEValue> tiers = new LinkedList<BEValue>();
+			for (List<URI> trackers : this.trackers) {
+				List<BEValue> tierInfo = new LinkedList<BEValue>();
+				for (URI trackerURI : trackers) {
+					tierInfo.add(new BEValue(trackerURI.toString()));
+				}
+				tiers.add(new BEValue(tierInfo));
+			}
+			this.decoded.put("announce-list", new BEValue(tiers));
+		}
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		BEncoder.bencode(new BEValue(this.decoded), baos);
+		this.encoded = baos.toByteArray();
 	}
 
 	/**
