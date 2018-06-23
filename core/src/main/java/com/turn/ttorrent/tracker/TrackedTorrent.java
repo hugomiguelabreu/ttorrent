@@ -114,6 +114,15 @@ public class TrackedTorrent extends Torrent {
 	}
 
 	/**
+	 * Set the super injected peer that is local to the server
+	 *
+	 * @param peerID The new Peer involved with this torrent.
+	 */
+	public void removelocalInjectPeerID(String peerID) {
+		this.localInjectedPeer = null;
+	}
+
+	/**
 	 * Add an special super peer exchanging on this torrent.
 	 *
 	 * @param peer The new Peer involved with this torrent.
