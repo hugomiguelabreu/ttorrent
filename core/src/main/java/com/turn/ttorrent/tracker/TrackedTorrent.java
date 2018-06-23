@@ -335,9 +335,6 @@ public class TrackedTorrent extends Torrent {
 			peers.add(candidate);
 		}
 
-		System.out.println(peer.getHexPeerId());
-		System.out.println(localInjectedPeer);
-
 		if (this.injectedPeers.containsKey(peer.getHexPeerId())) {
 			//Se o peer é um tracker que não o próprio limpamos os outros users;
 			if(!this.localInjectedPeer.equals(peer.getHexPeerId())){
@@ -351,6 +348,10 @@ public class TrackedTorrent extends Torrent {
 				}
 			}
 		}
+
+		for(Peer pss: peers)
+			System.out.println(pss.getHexPeerId());
+
 		return peers;
 	}
 
