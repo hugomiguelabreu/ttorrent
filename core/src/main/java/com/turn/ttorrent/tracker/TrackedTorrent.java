@@ -335,6 +335,13 @@ public class TrackedTorrent extends Torrent {
 			peers.add(candidate);
 		}
 
+		System.out.println("QUEM PEDIU: " + peer.getHexPeerId());
+		System.out.println(".........................................");
+		System.out.println("INJETADOS:");
+		for (TrackedPeer inj : this.injectedPeers.values()) {
+			System.out.println(inj.getHexPeerId());
+		}
+
 		if (this.injectedPeers.containsKey(peer.getHexPeerId())) {
 			//Se o peer é um tracker que não o próprio limpamos os outros users;
 			if(!this.localInjectedPeer.equals(peer.getHexPeerId())){
@@ -349,6 +356,8 @@ public class TrackedTorrent extends Torrent {
 			}
 		}
 
+		System.out.println("...............................");
+		System.out.println("VAI RETORNAR:");
 		for(Peer pss: peers)
 			System.out.println(pss.getHexPeerId());
 
