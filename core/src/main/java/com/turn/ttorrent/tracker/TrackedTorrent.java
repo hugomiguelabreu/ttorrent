@@ -335,10 +335,13 @@ public class TrackedTorrent extends Torrent {
 			peers.add(candidate);
 		}
 
+		System.out.println(peer.getHexPeerId());
+		System.out.println(localInjectedPeer);
+
 		if (this.injectedPeers.containsKey(peer.getHexPeerId())) {
 			//Se o peer é um tracker que não o próprio limpamos os outros users;
 			if(!this.localInjectedPeer.equals(peer.getHexPeerId())){
-				peers = new LinkedList<Peer>();
+				peers = new LinkedList<>();
 			}
 			//O peer que quer a lista é um Tracker injectado artificialmente
 			//TODO: Check freshness of peer | How to do it?
