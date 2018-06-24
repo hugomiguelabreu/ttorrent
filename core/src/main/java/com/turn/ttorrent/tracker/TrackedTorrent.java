@@ -25,10 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -138,6 +135,13 @@ public class TrackedTorrent extends Torrent {
 	 */
 	public TrackedPeer getInjectedPeer(String peerId) {
 		return this.injectedPeers.get(peerId);
+	}
+
+	/**
+	 * Retrieve a list of special injected peer exchanging on this torrent.
+	 */
+	public ArrayList<TrackedPeer> getInjectedPeers() {
+		return new ArrayList<>(this.injectedPeers.values());
 	}
 
 	/**
