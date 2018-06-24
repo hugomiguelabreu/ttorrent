@@ -951,7 +951,7 @@ public class Client extends Observable implements Runnable,
 	public void handleIOException(SharingPeer peer, IOException ioe) {
 		logger.warn("I/O error while exchanging data with {}, " +
 			"closing connection with it!", peer, ioe.getMessage());
-		peer.unbind(true);
+		//peer.unbind(true);
 	}
 
 
