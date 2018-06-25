@@ -213,7 +213,7 @@ public class Announce implements Runnable {
 		// Set an initial announce interval to 5 seconds. This will be updated
 		// in real-time by the tracker's responses to our announce requests.
 		this.interval = 5;
-
+		int tries = 0;
 		AnnounceRequestMessage.RequestEvent event =
 			AnnounceRequestMessage.RequestEvent.STARTED;
 
@@ -225,7 +225,7 @@ public class Announce implements Runnable {
 			} catch (AnnounceException ae) {
 				logger.warn(ae.getMessage());
 
-				if(ae.getMessage().equals(ErrorMessage.FailureReason.UNKNOWN_TORRENT.getMessage())){
+				if(ae.getMessage().equals(ErrorMessage.FailureReason.UNKNOWN_TORRENT.getMessage()) && tries < 6){
 					logger.warn("Waiting for torrent to start on this tracker - CUSTOM MADE FOR LEI");
 				}else {
 					try {
