@@ -574,6 +574,7 @@ public class SharingPeer extends Peer implements MessageListener {
 				} catch (IOException ioe) {
 					this.fireIOException(new IOException(
 							"Error while sending piece block request!", ioe));
+					break;
 				}
 
 				break;
