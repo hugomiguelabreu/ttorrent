@@ -82,7 +82,7 @@ public class GatewayUPnP {
         } else {
             logger.warn("No active gateway device found");
             logger.warn("Stopping weupnp");
-            //return false;
+            return false;
         }
 
         // testing PortMappingNumberOfEntries
