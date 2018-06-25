@@ -620,7 +620,6 @@ public class SharingPeer extends Peer implements MessageListener {
 				} catch (IOException ioe) {
 					this.fireIOException(new IOException(
 							"Error while storing received piece block!", ioe));
-					break;
 				}
 				break;
 			case CANCEL:
