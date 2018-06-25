@@ -285,10 +285,9 @@ public class TrackedTorrent extends Torrent {
 			throw new IllegalArgumentException("Unexpected announce event type!");
 		}
 
+		peer.update(state, uploaded, downloaded, left);
 		this.setChanged();
 		this.notifyObservers(peer);
-
-		peer.update(state, uploaded, downloaded, left);
 		return peer;
 	}
 
