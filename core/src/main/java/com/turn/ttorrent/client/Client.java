@@ -952,6 +952,7 @@ public class Client extends Observable implements Runnable,
 		logger.warn("I/O error while exchanging data with {}, " +
 			"closing connection with it!", peer, ioe.getMessage());
 		peer.unbind(true);
+		this.peers.remove(peer.getHexPeerId());
 	}
 
 
