@@ -550,7 +550,7 @@ public class Client extends Observable implements Runnable,
 			logger.trace("Searching for {}...", search);
 			if (search.hasPeerId()) {
 				peer = this.peers.get(search.getHexPeerId());
-				if (peer != null) {
+				if (peer != null && peer.getPort() == search.getPort()) {
 					logger.trace("Found peer (by peer ID): {}.", peer);
 					this.peers.put(peer.getHostIdentifier(), peer);
 					this.peers.put(search.getHostIdentifier(), peer);
@@ -559,7 +559,7 @@ public class Client extends Observable implements Runnable,
 			}
 
 			peer = this.peers.get(search.getHostIdentifier());
-			if (peer != null) {
+			if (peer != null && peer.getPort() == search.getPort()) {
 				if (search.hasPeerId()) {
 					logger.trace("Recording peer ID {} for {}.",
 						search.getHexPeerId(), peer);
