@@ -338,14 +338,6 @@ public class TrackedTorrent extends Torrent {
 			peers.add(candidate);
 		}
 
-		for(Peer tp : peers){
-			System.out.println(tp.getIp() + ":" + tp.getPort());
-		}
-		System.out.println("INJECTED!!!!!!!!!!!!!!!!!!!!");
-		for(TrackedPeer tp : injectedPeers.values()){
-			System.out.println(tp.getIp() + ":" + tp.getPort());
-		}
-
 		if (this.injectedPeers.containsKey(peer.getHexPeerId())) {
 			//Se o peer é um tracker que não o próprio limpamos os outros users;
 			if(!this.localInjectedPeer.equals(peer.getHexPeerId())){
