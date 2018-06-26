@@ -40,6 +40,8 @@ public class Peer {
 	private ByteBuffer peerId;
 	private String hexPeerId;
 
+	private boolean refused = false;
+
 	/**
 	 * Instantiate a new peer.
 	 *
@@ -83,6 +85,14 @@ public class Peer {
 			this.address.getPort());
 
 		this.setPeerId(peerId);
+	}
+
+	public void setRefused(boolean refusedParam){
+		this.refused = refusedParam;
+	}
+
+	public boolean getRefused(){
+		return this.refused;
 	}
 
 	/**

@@ -27,7 +27,6 @@ import com.turn.ttorrent.common.protocol.TrackerMessage;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
@@ -551,7 +550,7 @@ public class Client extends Observable implements Runnable,
 			logger.trace("Searching for {}...", search);
 			if (search.hasPeerId()) {
 				peer = this.peers.get(search.getHexPeerId());
-				if (peer != null && serverListening(peer.getIp(), peer.getPort())) {
+				if (peer != null && peer.getRefused() == false) {
 					logger.trace("Found peer (by peer ID): {}.", peer);
 					this.peers.put(peer.getHostIdentifier(), peer);
 					this.peers.put(search.getHostIdentifier(), peer);
@@ -560,7 +559,7 @@ public class Client extends Observable implements Runnable,
 			}
 
 			peer = this.peers.get(search.getHostIdentifier());
-			if (peer != null && serverListening(peer.getIp(), peer.getPort())) {
+			if (peer != null && peer.getRefused() == false) {
 				if (search.hasPeerId()) {
 					logger.trace("Recording peer ID {} for {}.",
 						search.getHexPeerId(), peer);
@@ -585,26 +584,6 @@ public class Client extends Observable implements Runnable,
 			}
 
 			return peer;
-		}
-	}
-
-	public static boolean serverListening(String host, int port)
-	{
-		Socket s = null;
-		try
-		{
-			s = new Socket(host, port);
-			return true;
-		}
-		catch (Exception e)
-		{
-			return false;
-		}
-		finally
-		{
-			if(s != null)
-				try {s.close();}
-				catch(Exception e){}
 		}
 	}
 
