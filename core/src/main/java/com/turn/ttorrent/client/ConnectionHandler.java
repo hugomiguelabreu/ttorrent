@@ -529,7 +529,7 @@ public class ConnectionHandler implements Runnable {
 			InetSocketAddress address =
 				new InetSocketAddress(this.peer.getIp(), this.peer.getPort());
 			SocketChannel channel = null;
-
+			System.out.println(this.peer.getIp() + ":" + this.peer.getPort() + "!!!!!!!!!!!!!");
 			try {
 				logger.info("Connecting to {}...", this.peer);
 				channel = SocketChannel.open(address);

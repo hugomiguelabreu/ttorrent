@@ -725,9 +725,6 @@ public class Client extends Observable implements Runnable,
 
 		logger.info("Got {} peer(s) in tracker response.", peers.size());
 
-		for(Peer p : peers)
-			System.out.println(p.getIp() + ":" + p.getPort() + "!!!!!!!!!!!");
-
 		if (!this.service.isAlive()) {
 			logger.warn("Connection handler service is not available.");
 			return;
