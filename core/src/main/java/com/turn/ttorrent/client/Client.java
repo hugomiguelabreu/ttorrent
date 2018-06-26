@@ -571,6 +571,9 @@ public class Client extends Observable implements Runnable,
 				return peer;
 			}
 
+			if(peer!= null)
+				peer.unbind(true);
+
 			peer = new SharingPeer(search.getIp(), search.getPort(),
 				search.getPeerId(), this.torrent);
 			logger.trace("Created new peer: {}.", peer);
